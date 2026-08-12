@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Verifikator - SIAP PMK</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #F1F5F9; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Panel -->
+    <header class="main-header panel-header">
+        <div class="header-left">
+            <img src="logo.png" alt="Logo SIAP PMK" class="app-logo-large">
+            <h2 class="panel-title">SIAP PMK</h2>
+        </div>
+        <div class="header-right">
+            <span class="user-name" id="displayName">Tim Penilai</span>
+            <span class="separator">|</span>
+            <span class="user-role" id="displayRole">Verifikator</span>
+            
+            <!-- Tombol Pengaturan -->
+            <button id="btnSettings" class="btn-settings" title="Pengaturan Pengguna">
+                <i class="fas fa-cog"></i>
+            </button>
+            
+            <button id="btnLogout" class="btn-logout" title="Keluar">
+                <i class="fas fa-power-off"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Konten Utama Panel -->
+    <main class="panel-content panel-content-wide">
+        <div class="content-header content-header-complex">
+            <div class="title-area">
+                <h2>Rekap Usulan</h2>
+                <p>Daftar pengajuan PMK se-Kabupaten Balangan</p>
+            </div>
+            
+            <div class="action-area-complex">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Cari nama, NIP, atau Unor..." class="search-input">
+                </div>
+                
+                <div class="button-group-right">
+                    <button class="btn-action btn-refresh" title="Segarkan Data">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <!-- Tambahan Tombol Unduh Rekap -->
+                    <button class="btn-action btn-sk" id="btnUnduhRekap" title="Unduh Rekap (Excel)">
+                        <i class="fas fa-download btn-icon"></i> Unduh
+                    </button>
+                    <button class="btn-action btn-info" id="btnInfoStatistik">
+                        <i class="fas fa-chart-pie btn-icon"></i> Informasi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Tabel Data -->
+        <div class="usulan-card">
+            <div class="table-responsive">
+                <!-- Tambahan class table-sm agar huruf lebih kecil -->
+                <table class="data-table table-sm">
+                    <thead>
+                        <tr>
+                            <th width="13%">Tanggal</th>
+                            <th width="15%">Pengusul</th>
+                            <th width="15%">Pengelola</th>
+                            <th width="15%">Verifikator</th>
+                            <th width="15%">Tanggapan</th>
+                            <th width="15%">Keterangan</th>
+                            <th width="12%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                     <!-- Baris Data akan di-generate oleh JavaScript di sini -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tambahkan penanda Empty State di bawah tabel -->
+            <div id="tableEmptyState" style="text-align: center; padding: 40px; color: #64748B; display: none;">
+                <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; color: #94A3B8;"></i>
+                <p>Belum Ada Usulan</p>
+            </div>
+            
+            <!-- Smart Pagination -->
+            <div class="pagination-wrapper">
+                <span class="pagination-info">Menampilkan 1-1 dari 120 data</span>
+                <ul class="pagination">
+                    <li><button class="page-btn disabled"><i class="fas fa-chevron-left"></i> Prev</button></li>
+                    <li><button class="page-btn active">1</button></li>
+                    <li><button class="page-btn">2</button></li>
+                    <li><button class="page-btn">3</button></li>
+                    <li><span class="page-dots">...</span></li>
+                    <li><button class="page-btn">12</button></li>
+                    <li><button class="page-btn">Next <i class="fas fa-chevron-right"></i></button></li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL 1: STATISTIK USULAN -->
+    <div id="statistikModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <span id="btnCloseStatistik" class="close-modal">&times;</span>
+            <div class="header-text-modal" style="margin-bottom: 20px;">
+                <h2>Statistik Usulan PMK</h2>
+                <p style="font-size: 0.85rem; color: #64748B;">Rekapitulasi data usulan se-Kabupaten Balangan</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box" style="border-top: 3px solid #3B82F6;">
+                    <h3 id="statTotal">120</h3>
+                    <p>Total Usulan</p>
+                </div>
+                <div class="stat-box" style="border-top: 3px solid #2563EB;">
+                    <h3 id="statProses" style="color: #2563EB;">45</h3>
+                    <p>Proses</p>
+                </div>
+                <div class="stat-box" style="border-top: 3px solid #16A34A;">
+                    <h3 id="statAcc" style="color: #16A34A;">60</h3>
+                    <p>Selesai / ACC</p>
+                </div>
+                <div class="stat-box" style="border-top: 3px solid #D97706;">
+                    <h3 id="statBts" style="color: #D97706;">10</h3>
+                    <p>BTS</p>
+                </div>
+                <div class="stat-box" style="border-top: 3px solid #DC2626;">
+                    <h3 id="statTms" style="color: #DC2626;">5</h3>
+                    <p>TMS</p>
+                </div>
+            </div>
+            <button class="btn-submit" onclick="document.getElementById('btnCloseStatistik').click()">Tutup</button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: PENGATURAN PENGGUNA -->
+    <div id="pengaturanModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <span id="btnClosePengaturan" class="close-modal">&times;</span>
+            <div class="header-text-modal" style="margin-bottom: 20px;">
+                <h2>Pengaturan Pengguna</h2>
+                <p style="font-size: 0.85rem; color: #64748B;">Manajemen Hak Akses & Reset Password</p>
+            </div>
+            
+            <!-- Area Pencarian NIP -->
+            <div class="search-user-area" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="adminSearchNip" placeholder="Ketik NIP Pegawai..." class="search-input" style="flex: 1;" maxlength="18">
+                
+                <button type="button" id="btnAdminSearchUser" class="btn-submit" style="width: auto; margin-top: 0; padding: 0 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px;">
+                    <span class="btn-text"><i class="fas fa-search btn-icon"></i> Cari</span>
+                    <span class="btn-loader loader"></span>
+                </button>
+            </div>
+
+            <!-- Area Hasil (Sembunyi sebelum dicari) -->
+            <div id="adminUserResult" style="display: none; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 15px; border-radius: 8px;">
+                <h4 style="margin-bottom: 5px; color: #0F172A; border-bottom: 1px dashed #CBD5E1; padding-bottom: 8px;" id="adminResNama">Nama Pegawai</h4>
+                
+                <div class="input-group" style="margin-top: 10px;">
+                    <label>Hak Akses (Role)</label>
+                    <select id="adminSelectRole" style="background-color: #FFFFFF;">
+                        <option value="Pengusul">Pengusul</option>
+                        <option value="Pengelola">Pengelola</option>
+                        <option value="Verifikator">Verifikator</option>
+                    </select>
+                </div>
+                
+                <!-- TAMBAHAN BARU: Input Unor Induk -->
+                <div class="input-group">
+                    <label>Unor Induk Pegawai</label>
+                    <input type="text" id="adminInputUnor" class="search-input" placeholder="Cth: DISDIKBUD / DINKES / INSTANSI" required>
+                    <small style="color:#64748B; font-size: 0.75rem; margin-top: 4px; display: block;"><i class="fas fa-info-circle"></i> Verifikator wajib menggunakan "INSTANSI".</small>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" id="btnAdminSaveRole" class="btn-submit" style="flex: 1; display: inline-flex; justify-content: center;">
+                        <i class="fas fa-save btn-icon"></i> Simpan
+                    </button>
+                    <button type="button" id="btnAdminResetPass" class="btn-submit" style="flex: 1; background-color: #EF4444; border-color: #EF4444; display: inline-flex; justify-content: center;">
+                        <i class="fas fa-key btn-icon"></i> Reset Pass
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DETAIL & VERIFIKASI -->
+    <div id="detailModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card modal-lg">
+            <span id="btnCloseDetail" class="close-modal">&times;</span>
+            <div class="header-text-modal" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <h2>Detail Usulan & Verifikasi</h2>
+                <!-- Tombol Buka Berkas di dalam Modal -->
+                <button type="button" id="btnBukaBerkasModal" class="btn-action btn-folder" style="padding: 8px 15px; font-size: 0.85rem; height: fit-content; border: none; border-radius: 6px; cursor: pointer;">
+                    <i class="fas fa-folder-open btn-icon"></i> Buka Berkas
+                </button>
+            </div>
+            
+            <!-- Konten Detail Data -->
+            <div class="detail-content" style="margin-bottom: 25px;">
+                <div class="usulan-header" style="border-radius: 8px 8px 0 0;">
+                    <span class="usulan-id"><i class="fas fa-hashtag btn-icon"></i> ID: PMK-2026-08001</span>
+                    <span class="usulan-date"><i class="far fa-calendar-alt btn-icon"></i> 07 Agustus 2026</span>
+                </div>
+                <div class="usulan-body" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-top: none; border-radius: 0 0 8px 8px; padding: 20px;">
+                    <div class="form-grid">
+                        <div>
+                            <h4 style="margin-bottom: 12px; color: #0F172A; border-bottom: 2px solid #F1F5F9; padding-bottom: 5px;"><i class="fas fa-id-badge"></i> Data Pengusul</h4>
+                            <table class="info-table">
+                                <tr><td>Nama</td><td>: Reza</td></tr>
+                                <tr><td>NIP</td><td>: 199001012015031001</td></tr>
+                                <tr><td>Pangkat</td><td>: Penata Muda Tk. I (III/b)</td></tr>
+                                <tr><td>TMT Pangkat</td><td>: 01 April 2024</td></tr>
+                                <tr><td>Jabatan</td><td>: Analis SDM Aparatur</td></tr>
+                                <tr><td>Unor</td><td>: Bidang Kepegawaian</td></tr>
+                                <tr><td>Unor Induk</td><td>: BKPSDM</td></tr>
+                                <tr><td>Nomor WA</td><td>: 081234567890</td></tr>
+                            </table>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 12px; color: #0F172A; border-bottom: 2px solid #F1F5F9; padding-bottom: 5px;"><i class="fas fa-briefcase"></i> Riwayat Kerja</h4>
+                            <ul class="experience-list">
+                                <li>
+                                    <strong>PT. Inovasi Teknologi Banua</strong>
+                                    <span>01 Jan 2012 s.d. 31 Des 2014 (3 Thn, 0 Bln)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Verifikasi Instansi (Verifikator) -->
+            <div class="form-section" style="margin-bottom: 0;">
+                <h3 class="section-title"><i class="fas fa-clipboard-check btn-icon"></i> Verifikasi</h3>
+                <form id="formVerifikasi">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Status Usulan</label>
+                            <select id="statusVerifikator" required>
+                                <option value="" disabled selected>-- Pilih --</option>
+                                <option value="Proses">Proses (Sedang diperiksa)</option>
+                                <option value="BTS">BTS (Perlu Perbaikan Berkas)</option>
+                                <option value="TMS">TMS (Tidak Memenuhi Syarat)</option>
+                                <option value="ACC">ACC (Diteruskan ke BKN)</option>
+                                <option value="Selesai">Selesai (Terbit SK)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Unggah File SK</label>
+                            <!-- Hanya diisi jika status Selesai -->
+                            <input type="file" id="uploadSk" accept=".pdf" style="padding: 7px 12px;">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Catatan untuk Pengusul / Pengelola</label>
+                        <textarea id="catatanEksternal" placeholder="Catatan ini dapat dibaca oleh Pengusul dan Pengelola..." required style="min-height: 60px;"></textarea>
+                    </div>
+
+                    <!-- WADAH DINAMIS MASA KERJA -->
+                    <div id="containerVerifMasaKerja" style="margin-bottom: 15px; border-left: 3px solid #3B82F6; padding-left: 15px; background: #F8FAFC; padding-top: 10px; padding-bottom: 10px; border-radius: 0 8px 8px 0;">
+                        <!-- Input Masa Kerja I, II, dst akan di-generate oleh JS di sini -->
+                    </div>
+
+                    <!-- TOTAL OTOMATIS -->
+                    <div class="input-group" style="background: #F1F5F9; padding: 15px; border-radius: 8px; border: 1px dashed #CBD5E1; margin-bottom: 20px;">
+                        <label style="color: #0F172A; font-weight: 700;">Total Masa Kerja Disetujui (Otomatis)</label>
+                        <div class="duration-flex">
+                            <input type="text" id="totalVerifTahun" readonly class="input-readonly" placeholder="0 Tahun" style="font-weight: bold; color: #0F172A;">
+                            <input type="text" id="totalVerifBulan" readonly class="input-readonly" placeholder="0 Bulan" style="font-weight: bold; color: #0F172A;">
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 15px; background: #F5F3FF; padding: 15px; border-radius: 8px; border: 1px solid #DDD6FE;">
+                        <label style="color: #6D28D9;"><i class="fas fa-lock"></i> Keterangan Internal</label>
+                        <textarea id="catatanInternal" placeholder="Catatan ini hanya dapat dibaca oleh sesama Verifikator..." style="min-height: 60px; border-color: #C4B5FD;"></textarea>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button type="submit" id="btnSimpanVerifikasi" class="btn-submit" style="width: auto; display: inline-flex; padding: 10px 24px;">
+                            <span class="btn-text"><i class="fas fa-check-double btn-icon"></i> Simpan Hasil Verifikasi</span>
+                            <span class="btn-loader loader"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script> <!-- Tambahan SheetJS -->
+    <script src="verifikator.js"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIAP PMK</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <!-- BAGIAN 1: HALAMAN COVER -->
+    <div id="coverPage">
+        <header class="main-header"></header>
+        
+        <main class="cover-content">
+            <div class="logo-area">
+                <img src="logo.png" alt="Logo SIAP PMK" class="app-logo-large">
+            </div>
+            
+            <div class="text-area">
+                <h1 class="main-title">SIAP PMK</h1>
+                <p class="description-text">
+                    Sistem Informasi Administrasi Pengusulan Peninjauan Masa Kerja
+                    <br>
+                    di Lingkungan Pemerintah Kabupaten Balangan
+                </p>
+            </div>
+            
+            <div class="action-area">
+                <button id="btnShowLogin" class="btn-cover-login">
+                    <i class="fas fa-sign-in-alt btn-icon"></i> Login
+                </button>
+            </div>
+        </main>
+        
+        <footer class="cover-footer">
+            <p>&copy; 2026 &mdash; BKPSDM Balangan</p>
+        </footer>
+    </div>
+    
+    <!-- BAGIAN 2: MODAL LOGIN -->
+    <div id="loginModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <span id="btnCloseModal" class="close-modal">&times;</span>
+            
+            <div class="logo-container-modal">
+                <img src="logo.png" alt="Logo SIAP PMK" class="app-logo-modal">
+            </div>
+            
+            <div class="header-text-modal">
+                <h2>SIAP PMK</h2>
+            </div>
+
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="nip">Username</label>
+                    <input type="text" id="nip" name="nip" placeholder="Masukkan username..." required autocomplete="off">
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Masukkan password...." required>
+                        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <button type="submit" id="btnLoginModal" class="btn-submit">
+                    <span class="btn-text"><i class="fas fa-arrow-right-to-bracket btn-icon"></i> Masuk</span>
+                    <span class="btn-loader loader"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GANTI PASSWORD (FORCE CHANGE) -->
+    <div id="changePasswordModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <!-- Tombol Batal untuk kembali ke halaman depan -->
+            <span id="btnCancelChangePassword" class="close-modal">&times;</span>
+            
+            <div class="logo-container-modal">
+                <img src="logo.png" alt="Logo SIAP PMK" class="app-logo-modal">
+            </div>
+            <div class="header-text-modal" style="margin-bottom: 15px;">
+                <h2>Pembaruan Keamanan</h2>
+                <p style="font-size: 0.85rem; color: #64748B; margin-top: 5px; line-height: 1.5;">Sistem mendeteksi Anda masih menggunakan password default. Silakan buat password baru demi keamanan akun Anda.</p>
+            </div>
+
+            <form id="formChangePassword">
+                <div class="input-group">
+                    <label>Password Baru</label>
+                    <div class="password-wrapper">
+                        <!-- Tambahkan autocomplete="new-password" di sini -->
+                        <input type="password" id="newPassword" placeholder="Min. 8 karakter (Huruf & Angka)" required autocomplete="new-password">
+                        <i class="fas fa-eye-slash toggle-password" id="toggleNewPassword"></i>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Konfirmasi Password Baru</label>
+                    <div class="password-wrapper">
+                        <!-- Tambahkan autocomplete="new-password" di sini -->
+                        <input type="password" id="confirmPassword" placeholder="Ketik ulang password baru" required autocomplete="new-password">
+                        <i class="fas fa-eye-slash toggle-password" id="toggleConfirmPassword"></i>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Email Aktif</label>
+                    <!-- Tambahkan autocomplete="off" di sini -->
+                    <input type="email" id="userEmail" placeholder="Cth: nama@gmail.com" required autocomplete="off">
+                </div>
+                
+                <button type="submit" id="btnSubmitChangePassword" class="btn-submit" style="margin-top: 20px;">
+                    <span class="btn-text"><i class="fas fa-save btn-icon"></i> Simpan Password</span>
+                    <span class="btn-loader loader"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+</body>
+</html>

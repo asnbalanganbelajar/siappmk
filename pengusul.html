@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Pengusul - SIAP PMK</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Mengubah latar belakang khusus halaman ini */
+        body { background-color: #F1F5F9; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Panel -->
+    <header class="main-header panel-header">
+        <div class="header-left">
+            <img src="logo.png" alt="Logo SIAP PMK" class="app-logo-large">
+            <h2 class="panel-title">SIAP PMK</h2>
+        </div>
+        <div class="header-right">
+            <span class="user-name" id="displayName">Reza</span>
+            <span class="separator">|</span>
+            <span class="user-role" id="displayRole">Pengusul</span>
+            <button id="btnLogout" class="btn-logout" title="Keluar">
+                <i class="fas fa-power-off"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Konten Utama Panel -->
+    <main class="panel-content">
+        <!-- Bagian Judul dan Tombol Aksi Atas -->
+        <div class="content-header">
+            <div class="title-area">
+                <h2>Riwayat Usulan</h2>
+                <p>Daftar pengajuan usul PMK Anda</p>
+            </div>
+            <div class="action-area">
+                <button class="btn-action btn-refresh" id="btnRefreshData">
+                    <i class="fas fa-sync-alt btn-icon"></i> Refresh
+                </button>
+                <!-- Tombol Buat Usulan (Aktif Default) -->
+                <button class="btn-action btn-primary" id="btnBuatUsulan">
+                    <i class="fas fa-plus btn-icon"></i> Buat Usulan
+                </button>
+            </div>
+        </div>
+
+        <!-- Container untuk Card Usulan (Kosong secara default) -->
+        <div id="usulanCardContainer" style="display: none;">
+             <!-- Isi card akan di-generate oleh JS di sini -->
+        </div>
+        
+        <!-- Pesan Kosong (Jika Belum Ada Usulan) -->
+        <div id="emptyStateContainer" style="text-align: center; padding: 50px 20px; background: white; border-radius: 12px; border: 1px dashed #CBD5E1; color: #64748B;">
+            <i class="fas fa-folder-open" style="font-size: 3rem; color: #94A3B8; margin-bottom: 15px;"></i>
+            <h3 style="color: #1E293B; margin-bottom: 8px;">Belum Ada Usulan</h3>
+            <p>Silakan klik tombol "Buat Usulan" untuk memulai proses usulan.</p>
+        </div>
+    </main>
+
+    <!-- BAGIAN 4: MODAL FORM BUAT USULAN (Tersembunyi secara default) -->
+    <div id="usulanModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card modal-lg">
+            <span id="btnCloseUsulan" class="close-modal">&times;</span>
+            
+            <div class="header-text-modal" style="margin-bottom: 15px;">
+                <h2 id="modalUsulanTitle">Form Buat Usulan PMK</h2>
+            </div>
+
+            <form id="formBuatUsulan">
+                <!-- Bagian 1: Data Diri -->
+                <div class="form-section">
+                    <h3 class="section-title"><i class="fas fa-id-badge btn-icon"></i> Data Diri</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Nama</label>
+                            <input type="text" id="usulNama" readonly class="input-readonly">
+                        </div>
+                        <div class="input-group">
+                            <label>NIP</label>
+                            <input type="text" id="usulNip" readonly class="input-readonly">
+                        </div>
+                        <div class="input-group">
+                            <label>Pangkat</label>
+                            <select id="usulPangkat" required>
+                                <option value="" disabled selected>-- Pilih --</option>
+                                <option value="Pengatur Muda (II/a)">Pengatur Muda (II/a)</option>
+                                <option value="Pengatur Muda Tk. I (II/b)">Pengatur Muda Tk. I (II/b)</option>
+                                <option value="Pengatur (II/c)">Pengatur (II/c)</option>
+                                <option value="Pengatur Tk. I (II/d)">Pengatur Tk. I (II/d)</option>
+                                <option value="Penata Muda (III/a)">Penata Muda (III/a)</option>
+                                <option value="Penata Muda Tk. I (III/b)">Penata Muda Tk. I (III/b)</option>
+                                <option value="Penata (III/c)">Penata (III/c)</option>
+                                <option value="Penata Tk. I (III/d)">Penata Tk. I (III/d)</option>
+                                <option value="Pembina (IV/a)">Pembina (IV/a)</option>
+                                <option value="Pembina Tk. I (IV/b)">Pembina Tk. I (IV/b)</option>
+                                <option value="Pembina Utama Muda (IV/c)">Pembina Utama Muda (IV/c)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>TMT Pangkat</label>
+                            <input type="date" id="usulTmtPangkat" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Jabatan</label>
+                            <input type="text" id="usulJabatan" placeholder="Cth: Perawat Ahli Pertama" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Unit Organisasi (Unit Kerja)</label>
+                            <input type="text" id="usulUnor" placeholder="Cth: UPTD Puskesmas Sanggam" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Unit Organisasi Induk</label>
+                            <select id="usulUnorInduk" required>
+                                <option value="" disabled selected>-- Pilih --</option>
+                                <option value="BAKESBANGPOL">BAKESBANGPOL</option>
+                                <option value="BAPPERIDA">BAPPERIDA</option>
+                                <option value="BKPSDM">BKPSDM</option>
+                                <option value="BPBD">BPBD</option>
+                                <option value="BPKPAD">BPKPAD</option>
+                                <option value="DINKES">DINKES</option>
+                                <option value="DINSOS">DINSOS</option>
+                                <option value="DISDIKBUD">DISDIKBUD</option>
+                                <option value="DISDUKCAPIL">DISDUKCAPIL</option>
+                                <option value="DISHUB">DISHUB</option>
+                                <option value="DISKOMINFOSAN">DISKOMINFOSAN</option>
+                                <option value="DISPERINDAG">DISPERINDAG</option>
+                                <option value="DISPERSIP">DISPERSIP</option>
+                                <option value="DISPORAPAR">DISPORAPAR</option>
+                                <option value="DKPPP">DKPPP</option>
+                                <option value="DKUKMTK">DKUKMTK</option>
+                                <option value="DPLH">DPLH</option>
+                                <option value="DPMPTSP">DPMPTSP</option>
+                                <option value="DPPPAPPKBPMD">DPPPAPPKBPMD</option>
+                                <option value="DPUPRPERKIM">DPUPRPERKIM</option>
+                                <option value="INSPEKTORAT DAERAH">INSPEKTORAT DAERAH</option>
+                                <option value="RSDKH">RSDKH</option>
+                                <option value="SATPOLPP">SATPOLPP</option>
+                                <option value="SEKRETARIAT DAERAH">SEKRETARIAT DAERAH</option>
+                                <option value="SEKRETARIAT DPRD">SEKRETARIAT DPRD</option>
+                                <option value="KEC. AWAYAN">KEC. AWAYAN</option>
+                                <option value="KEC. BATUMANDI">KEC. BATUMANDI</option>
+                                <option value="KEC. HALONG">KEC. HALONG</option>
+                                <option value="KEC. JUAI">KEC. JUAI</option>
+                                <option value="KEC. LAMPIHONG">KEC. LAMPIHONG</option>
+                                <option value="KEC. PARINGIN">KEC. PARINGIN</option>
+                                <option value="KEC. PARINGIN SELATAN">KEC. PARINGIN SELATAN</option>
+                                <option value="KEC. TEBING TINGGI">KEC. TEBING TINGGI</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Nomor WhatsApp</label>
+                            <input type="tel" id="usulWa" placeholder="08xxxxxxxxxx" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 2: Riwayat Kerja -->
+                <div class="form-section">
+                    <h3 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span><i class="fas fa-briefcase btn-icon"></i> Riwayat Kerja Sebelum CPNS</span>
+                        <span class="badge badge-bts" id="riwayatCountBadge">1 / 5</span>
+                    </h3>
+                    
+                    <div id="riwayatContainer">
+                        <!-- Item Riwayat Kerja akan di-generate oleh JavaScript di sini -->
+                    </div>
+
+                    <button type="button" id="btnTambahRiwayat" class="btn-action btn-refresh" style="width: 100%; justify-content: center; margin-top: 15px;">
+                        <i class="fas fa-plus btn-icon"></i> Tambah Riwayat Kerja (Maks. 4)
+                    </button>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div style="margin-top: 30px;">
+                    <button type="submit" id="btnSimpanUsulan" class="btn-submit">
+                        <span class="btn-text"><i class="fas fa-save btn-icon"></i> Simpan Usulan</span>
+                        <span class="btn-loader loader"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BAGIAN 5: MODAL TANGGAPAN (Tersembunyi secara default) -->
+    <div id="tanggapanModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <span id="btnCloseTanggapan" class="close-modal">&times;</span>
+            
+            <div class="header-text-modal" style="margin-bottom: 20px;">
+                <h2>Beri Tanggapan</h2>
+                <p style="font-size: 0.85rem; color: #64748B; margin-top: 5px;">Tanggapan ini akan dibaca oleh Pengelola / Verifikator.</p>
+            </div>
+
+            <form id="formTanggapan">
+                <div class="input-group">
+                    <label for="inputTanggapan">Isi Tanggapan</label>
+                    <textarea id="inputTanggapan" placeholder="Ketik tanggapan atau konfirmasi perbaikan di sini..." required></textarea>
+                </div>
+
+                <button type="submit" id="btnSimpanTanggapan" class="btn-submit">
+                    <span class="btn-text"><i class="fas fa-paper-plane btn-icon"></i> Kirim Tanggapan</span>
+                    <span class="btn-loader loader"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Perhatikan: Kita panggil file javascript khusus untuk pengusul -->
+    <script src="pengusul.js"></script> 
+</body>
+</html>
